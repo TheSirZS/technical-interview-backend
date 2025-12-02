@@ -3,8 +3,7 @@ const { hasParams } = require("../utils/validations");
 
 const getProducts = (req, res) => {
   const query = req.query;
-  const hasParams = hasParams(query);
-  if (!hasParams) {
+  if (!hasParams(query)) {
     res.status(200).send({
       products,
     });
@@ -22,8 +21,9 @@ const getProducts = (req, res) => {
 const createReview = (req, res) => {
   const body = req.body;
   const params = req.params;
-  const hasParams = hasParams(params);
-  if (!hasParams) {
+  console.log(body);
+  console.log(params);
+  if (!hasParams(params)) {
     res.status(403).send({ message: "Operation Not Allowed" });
   } else {
     const id = params.id;
@@ -31,29 +31,37 @@ const createReview = (req, res) => {
     if (!product) {
       res.status(404).send({ message: "Product Not Found" });
     } else {
-      const { reviewer, rating, comment } = body;
-      if (!comment) {
+      if (!body || !hasParams(body)) {
         return res.status(403).send({
           message:
-            "Operation Not Allowed: (Comment is required to complete this operation)",
+            "Operation Not Allowed: (Body is required to complete this operation)",
         });
-      }
-      if (rating <= 0 || rating > 5) {
-        return res.status(403).send({
-          message: "Operation Not Allowed: (Rating should be between 1 and 5)",
-        });
-      }
-      const results = products.map((product) => {
-        if (product.id === id) {
-          product.reviews.push({ reviewer, rating, comment });
-          return product;
+      } else {
+        const { comment, rating, reviewer } = body;
+        if (!comment) {
+          return res.status(403).send({
+            message:
+              "Operation Not Allowed: (Comment is required to complete this operation)",
+          });
         }
-        return product;
-      });
-      res.status(201).send({
-        message: "Review successfully added",
-        products: results,
-      });
+        if (rating <= 0 || rating > 5) {
+          return res.status(403).send({
+            message:
+              "Operation Not Allowed: (Rating should be between 1 and 5)",
+          });
+        }
+        const results = products.map((product) => {
+          if (product.id === id) {
+            product.reviews.push({ reviewer, rating, comment });
+            return product;
+          }
+          return product;
+        });
+        res.status(201).send({
+          message: "Review successfully added",
+          products: results,
+        });
+      }
     }
   }
 

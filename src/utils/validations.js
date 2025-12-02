@@ -1,5 +1,6 @@
-const hasParams = (params) =>
-  Object.values(params).some((value) => value.trim() !== "");
+const hasParams = (params) => {
+  return Object.values(params).some((value) => value.trim() !== "");
+};
 
 module.exports = {
   hasParams,
