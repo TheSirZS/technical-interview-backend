@@ -21,8 +21,6 @@ const getProducts = (req, res) => {
 const createReview = (req, res) => {
   const body = req.body;
   const params = req.params;
-  console.log(body);
-  console.log(params);
   if (!hasParams(params)) {
     res.status(403).send({ message: "Operation Not Allowed" });
   } else {
